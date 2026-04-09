@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PR 기사 스튜디오 v2 — SEO 최적화</title>
+<title>PR 기사 스튜디오 v3</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -60,8 +60,9 @@
   .preview-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
   iframe#previewFrame { width: 100%; height: 600px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
   .code-block { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: monospace; font-size: 12px; color: #79c0ff; max-height: 200px; overflow-y: auto; display: none; }
-  .seo-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-  .seo-tag { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--success); border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+  .seo-checklist { display: flex; flex-direction: column; gap: 8px; }
+  .seo-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+  .seo-item.ok { color: var(--success); }
   .guide-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .guide-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 10px; }
   .guide-icon { font-size: 28px; }
@@ -78,10 +79,6 @@
   .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.4s ease; }
   .tip { background: rgba(79,125,255,0.08); border: 1px solid rgba(79,125,255,0.2); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--muted); line-height: 1.6; }
   .tip strong { color: var(--accent); }
-  .seo-checklist { display: flex; flex-direction: column; gap: 8px; }
-  .seo-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
-  .seo-item.ok { color: var(--success); }
-  .seo-item span { font-size: 16px; }
   @media(max-width:700px){ .form-grid{grid-template-columns:1fr} .field.span2{grid-column:span 1} .guide-grid{grid-template-columns:1fr} .main{padding:16px} header{padding:14px 16px} }
 </style>
 </head>
@@ -89,8 +86,8 @@
 
 <header>
   <div class="logo">📰</div>
-  <h1>PR 기사 스튜디오 <span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">v2</span></h1>
-  <span>SEO 최적화 버전 — 구글/네이버 검색 최적화</span>
+  <h1>PR 기사 스튜디오 <span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">v3</span></h1>
+  <span>Netlify Functions 연동 — 어디서나 동작</span>
 </header>
 
 <nav class="steps-bar">
@@ -126,16 +123,16 @@
         <div class="field"><label>보도 날짜</label><input type="date" id="pubDate"></div>
         <div class="field"><label>담당자 이름</label><input type="text" id="contactName" placeholder="홍길동 대표이사"></div>
         <div class="field"><label>회사 웹사이트</label><input type="text" id="website" placeholder="https://example.com"></div>
-        <div class="field span2"><label>핵심 내용 / 메시지 *</label><textarea id="mainContent" rows="4" placeholder="예: 당사가 시리즈A 50억원 투자 유치에 성공했습니다. 투자사는 ABC벤처스이며, 이번 투자금은 제품 고도화와 글로벌 진출에 사용될 예정입니다."></textarea></div>
+        <div class="field span2"><label>핵심 내용 / 메시지 *</label><textarea id="mainContent" rows="4" placeholder="예: 당사가 시리즈A 50억원 투자 유치에 성공했습니다."></textarea></div>
         <div class="field span2">
-          <label>SEO 핵심 키워드 * (Enter로 추가 — 검색 노출에 매우 중요)</label>
+          <label>SEO 핵심 키워드 (Enter로 추가)</label>
           <div class="tag-input-wrap" onclick="document.getElementById('tagRealInput').focus()">
             <div id="tagList"></div>
-            <input type="text" id="tagRealInput" placeholder="예: 스타트업 투자, AI 솔루션, 핀테크 등">
+            <input type="text" id="tagRealInput" placeholder="예: 스타트업 투자, AI 솔루션">
           </div>
         </div>
-        <div class="field"><label>배포할 GitHub Pages URL (선택)</label><input type="text" id="pageUrl" placeholder="https://jhkim-afk.github.io/pr-article-studio"></div>
-        <div class="field"><label>대표 이미지 URL (선택 — SNS 공유 썸네일)</label><input type="text" id="ogImage" placeholder="https://example.com/image.jpg"></div>
+        <div class="field"><label>배포 URL</label><input type="text" id="pageUrl" placeholder="https://lighthearted-mermaid-dbe449.netlify.app"></div>
+        <div class="field"><label>대표 이미지 URL (SNS 썸네일)</label><input type="text" id="ogImage" placeholder="https://example.com/image.jpg"></div>
       </div>
     </div>
     <div class="panel">
@@ -167,7 +164,7 @@
         <button class="btn btn-primary" onclick="goStep(3); generatePage()">🖥️ SEO 페이지 생성 →</button>
       </div>
     </div>
-    <div class="tip"><strong>💡 팁:</strong> 기사 내용을 직접 클릭해서 수정할 수 있어요. 키워드가 자연스럽게 포함될수록 SEO에 유리해요.</div>
+    <div class="tip"><strong>💡 팁:</strong> 기사 내용을 직접 클릭해서 수정할 수 있어요.</div>
   </div>
 
   <!-- STEP 3 -->
@@ -203,16 +200,16 @@
       <div class="panel-title">🚀 배포 후 구글/네이버 등록 (5분)</div>
       <div class="guide-grid">
         <div class="guide-card">
-          <div class="guide-icon">🔵</div>
-          <div class="guide-title">① GitHub Pages 배포</div>
-          <div class="guide-desc">다운로드한 HTML 파일을 <strong>index.html</strong>로 이름 바꿔서 GitHub에 업로드</div>
+          <div class="guide-icon">💻</div>
+          <div class="guide-title">① 터미널에서 GitHub 푸시</div>
+          <div class="guide-desc">다운로드한 HTML 파일을 터미널 한 줄로 업로드</div>
           <div class="guide-steps">
-            <div class="guide-step"><div class="guide-step-num">1</div>github.com → New repository → pr-article-studio</div>
-            <div class="guide-step"><div class="guide-step-num">2</div>Add file → Upload files → index.html 업로드</div>
-            <div class="guide-step"><div class="guide-step-num">3</div>Settings → Pages → Branch: main → Save</div>
-            <div class="guide-step"><div class="guide-step-num">4</div>jhkim-afk.github.io/pr-article-studio 접속 확인</div>
+            <div class="guide-step"><div class="guide-step-num">1</div>HTML 파일 다운로드</div>
+            <div class="guide-step"><div class="guide-step-num">2</div>~/Downloads/upload_article.sh 파일명.html</div>
+            <div class="guide-step"><div class="guide-step-num">3</div>Netlify 자동 재배포 (30초)</div>
+            <div class="guide-step"><div class="guide-step-num">4</div>새 URL 확인</div>
           </div>
-          <div class="badge-row"><span class="badge">무료</span><span class="badge">완료까지 3분</span></div>
+          <div class="badge-row"><span class="badge">자동화</span><span class="badge">1분</span></div>
         </div>
         <div class="guide-card">
           <div class="guide-icon">🔴</div>
@@ -221,8 +218,8 @@
           <div class="guide-steps">
             <div class="guide-step"><div class="guide-step-num">1</div>search.google.com/search-console 접속</div>
             <div class="guide-step"><div class="guide-step-num">2</div>URL 접두어 → 배포된 URL 입력</div>
-            <div class="guide-step"><div class="guide-step-num">3</div>소유권 확인 (HTML 파일 방식 추천)</div>
-            <div class="guide-step"><div class="guide-step-num">4</div>URL 검사 → 색인 생성 요청 클릭</div>
+            <div class="guide-step"><div class="guide-step-num">3</div>소유권 확인</div>
+            <div class="guide-step"><div class="guide-step-num">4</div>URL 검사 → 색인 생성 요청</div>
           </div>
           <div class="badge-row"><span class="badge">무료</span><span class="badge">3~7일 내 노출</span></div>
         </div>
@@ -233,7 +230,7 @@
           <div class="guide-steps">
             <div class="guide-step"><div class="guide-step-num">1</div>searchadvisor.naver.com 접속</div>
             <div class="guide-step"><div class="guide-step-num">2</div>웹마스터 도구 → 사이트 등록</div>
-            <div class="guide-step"><div class="guide-step-num">3</div>HTML 태그 방식으로 소유확인</div>
+            <div class="guide-step"><div class="guide-step-num">3</div>소유권 확인</div>
             <div class="guide-step"><div class="guide-step-num">4</div>요청 → 웹 페이지 수집 → URL 제출</div>
           </div>
           <div class="badge-row"><span class="badge">무료</span><span class="badge">1~2주 내 노출</span></div>
@@ -241,36 +238,38 @@
         <div class="guide-card">
           <div class="guide-icon">📣</div>
           <div class="guide-title">④ SNS 링크 공유</div>
-          <div class="guide-desc">배포 URL을 SNS에 공유하면 크롤링 속도가 빨라지고 백링크 효과도 있어요</div>
+          <div class="guide-desc">배포 URL을 SNS에 공유하면 크롤링 속도가 빨라져요</div>
           <div class="guide-steps">
-            <div class="guide-step"><div class="guide-step-num">1</div>링크드인에 기사 URL + 한줄 요약 포스팅</div>
+            <div class="guide-step"><div class="guide-step-num">1</div>링크드인에 기사 URL 포스팅</div>
             <div class="guide-step"><div class="guide-step-num">2</div>페이스북 페이지에 공유</div>
-            <div class="guide-step"><div class="guide-step-num">3</div>카카오톡 채널 / 단톡방 공유</div>
+            <div class="guide-step"><div class="guide-step-num">3</div>카카오톡 채널 공유</div>
             <div class="guide-step"><div class="guide-step-num">4</div>트위터/X 공유</div>
           </div>
-          <div class="badge-row"><span class="badge">크롤링 가속</span><span class="badge">백링크 효과</span></div>
+          <div class="badge-row"><span class="badge">크롤링 가속</span></div>
         </div>
       </div>
     </div>
-    <div class="tip" style="margin-top:0;">
-      <strong>⏱️ 예상 타임라인:</strong> 배포 → 즉시 | 구글 노출 → 3~7일 | 네이버 노출 → 1~2주 | 키워드 상위 노출 → 2~4주
+    <div class="tip">
+      <strong>⏱️ 예상 타임라인:</strong> 배포 → 즉시 | 구글 노출 → 3~7일 | 네이버 노출 → 1~2주
     </div>
     <div class="actions" style="margin-top:20px;">
       <button class="btn btn-outline" onclick="goStep(3)">← 페이지로 돌아가기</button>
       <button class="btn btn-primary" onclick="goStep(1); resetAll()">🔁 새 기사 작성</button>
     </div>
   </div>
-
 </div>
 
 <script>
-let currentStep = 1;
+// API 엔드포인트 — Netlify Function 경유
+const API_URL = '/api/generate';
+
 let selectedTone = '공식적이고 전문적인';
 let tags = [];
 let generatedArticle = '';
 let generatedHtml = '';
 
 document.getElementById('pubDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('pageUrl').value = window.location.origin;
 
 document.getElementById('tagRealInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' || e.key === ',') {
@@ -300,9 +299,18 @@ function goStep(n) {
   document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
   document.getElementById('tab'+n).classList.add('active');
-  currentStep = n;
   document.getElementById('progressBar').style.width = (n*25)+'%';
   for(let i=1;i<n;i++) document.getElementById('tab'+i).classList.add('done');
+}
+
+async function callAI(prompt) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] })
+  });
+  const data = await res.json();
+  return data.content.map(b => b.text || '').join('');
 }
 
 async function generateArticle() {
@@ -322,7 +330,8 @@ async function generateArticle() {
   const actions = document.getElementById('articleActions');
   out.style.display='none'; area.style.display='block'; actions.style.display='none';
 
-  const prompt = `당신은 10년 경력의 전문 PR 기자입니다. 아래 정보로 SEO 최적화된 보도자료를 한국어로 작성해주세요.
+  try {
+    const result = await callAI(`당신은 10년 경력의 전문 PR 기자입니다. 아래 정보로 SEO 최적화된 보도자료를 한국어로 작성해주세요.
 
 기업명: ${company}
 업종: ${industry||'미기재'}
@@ -331,34 +340,23 @@ async function generateArticle() {
 담당자: ${contact||'미기재'}
 웹사이트: ${website||'미기재'}
 날짜: ${date}
-SEO 키워드 (반드시 자연스럽게 포함): ${keywords||'미기재'}
+SEO 키워드 (자연스럽게 포함): ${keywords||'미기재'}
+톤: ${selectedTone}
 
 작성 규칙:
-- 제목: SEO 키워드 포함, 클릭을 유도하는 50자 이내 제목
+- 제목: SEO 키워드 포함, 클릭 유도하는 50자 이내
 - 부제목: 핵심 내용 요약 1문장
-- 리드 문단: 육하원칙으로 핵심 압축 (2~3문장)
-- 본문 3~4단락: 구체적 수치/사실 포함, 키워드 자연스럽게 반복
+- 리드 문단: 육하원칙으로 핵심 압축
+- 본문 3~4단락: 구체적 수치/사실 포함
 - 담당자 인용구 1개
 - 회사 소개 단락
 - 문의처 정보
 
-SEO 규칙:
-- 제목에 핵심 키워드 반드시 포함
-- 첫 문단에 키워드 포함
-- 키워드 밀도 2~3% 유지
-- 자연스러운 문체 유지
+기사 텍스트만 출력하세요.`);
 
-기사 텍스트만 출력하세요.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
-    });
-    const data = await res.json();
-    generatedArticle = data.content.map(b=>b.text||'').join('');
     area.style.display='none';
-    out.textContent = generatedArticle;
+    out.textContent = result;
+    generatedArticle = result;
     out.style.display='block';
     actions.style.display='flex';
   } catch(err) {
@@ -372,7 +370,7 @@ async function generatePage() {
   const website = document.getElementById('website').value.trim();
   const date = document.getElementById('pubDate').value;
   const keywords = tags.join(', ');
-  const pageUrl = document.getElementById('pageUrl').value.trim() || 'https://jhkim-afk.github.io/pr-article-studio';
+  const pageUrl = document.getElementById('pageUrl').value.trim() || window.location.origin;
   const ogImage = document.getElementById('ogImage').value.trim();
 
   generatedArticle = document.getElementById('articleOutput').textContent || generatedArticle;
@@ -382,7 +380,8 @@ async function generatePage() {
   const step3Actions = document.getElementById('step3Actions');
   area.style.display='block'; box.style.display='none'; step3Actions.style.display='none';
 
-  const prompt = `아래 기사 내용으로 구글/네이버 SEO가 완벽하게 최적화된 뉴스 기사 HTML 페이지를 생성해주세요.
+  try {
+    const result = await callAI(`아래 기사 내용으로 구글/네이버 SEO가 완벽하게 최적화된 뉴스 기사 HTML 페이지를 생성해주세요.
 
 기사 내용:
 ${generatedArticle}
@@ -396,56 +395,38 @@ ${generatedArticle}
 - 웹사이트: ${website}
 - OG 이미지: ${ogImage || 'https://via.placeholder.com/1200x630'}
 
-반드시 포함해야 할 SEO 요소:
-1. <title> - 키워드 포함 60자 이내
-2. <meta name="description"> - 키워드 포함 160자 이내
-3. <meta name="keywords"> - 키워드 목록
-4. <meta name="robots" content="index, follow">
-5. <meta name="author">
-6. canonical URL 태그
-7. Open Graph 태그 (og:title, og:description, og:image, og:url, og:type, og:site_name)
-8. Twitter Card 태그
-9. Schema.org NewsArticle JSON-LD 구조화 데이터 (headline, datePublished, author, publisher, description, keywords 포함)
-10. 한국어 lang="ko" 설정
+반드시 포함:
+1. title, meta description, meta keywords
+2. meta robots index/follow
+3. canonical URL
+4. Open Graph 태그 (og:title, og:description, og:image, og:url, og:type)
+5. Twitter Card 태그
+6. Schema.org NewsArticle JSON-LD
+7. lang="ko"
 
-디자인 요구사항:
-- 깔끔한 한국 뉴스 사이트 스타일
-- 흰 배경, 본문 폰트 17px, 줄간격 1.8
-- 반응형 (모바일 최적화)
-- 최상단: 매체명 로고 영역 (회사명)
-- 기사 헤드라인 (h1), 부제목, 기자명/날짜
-- 본문, 인용구 박스, 회사소개, 문의처
-- 하단 푸터
+디자인: 한국 뉴스 사이트 스타일, 흰 배경, 반응형, 헤드라인/부제목/날짜/본문/인용구/회사소개/문의처/푸터 포함
 
-HTML 코드만 출력하고 다른 설명은 하지 마세요.`;
+HTML 코드만 출력하세요.`);
 
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
-    });
-    const data = await res.json();
-    let html = data.content.map(b=>b.text||'').join('');
-    html = html.replace(/```html|```/g,'').trim();
+    let html = result.replace(/```html|```/g,'').trim();
     generatedHtml = html;
 
     area.style.display='none';
     box.style.display='flex';
     step3Actions.style.display='flex';
 
-    // SEO 체크리스트
     const checks = [
       { label: 'Meta Title 태그', ok: html.includes('<title') },
       { label: 'Meta Description 태그', ok: html.includes('name="description"') },
       { label: 'Open Graph 태그 (SNS 공유)', ok: html.includes('og:title') },
       { label: 'Twitter Card 태그', ok: html.includes('twitter:card') },
-      { label: 'Schema.org NewsArticle (구조화 데이터)', ok: html.includes('NewsArticle') },
-      { label: 'Canonical URL 태그', ok: html.includes('canonical') },
+      { label: 'Schema.org NewsArticle', ok: html.includes('NewsArticle') },
+      { label: 'Canonical URL', ok: html.includes('canonical') },
       { label: 'robots index/follow', ok: html.includes('robots') },
       { label: '한국어 lang 설정', ok: html.includes('lang="ko"') },
     ];
     document.getElementById('seoChecklist').innerHTML = checks.map(c=>
-      `<div class="seo-item ${c.ok?'ok':''}"><span>${c.ok?'✅':'⚠️'}</span>${c.label}${c.ok?' 포함됨':' — 미포함'}</div>`
+      `<div class="seo-item ${c.ok?'ok':''}"><span>${c.ok?'✅':'⚠️'}</span>${c.label}</div>`
     ).join('');
 
     const frame = document.getElementById('previewFrame');
@@ -469,14 +450,15 @@ function downloadHtml() {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   const company = document.getElementById('companyName').value.trim() || 'press_release';
-  a.download = company+'_seo_article.html';
+  a.download = company+'_article.html';
   a.click();
 }
 
 function resetAll() {
   generatedArticle=''; generatedHtml=''; tags=[]; renderTags();
-  ['companyName','industry','mainContent','contactName','website','pageUrl','ogImage'].forEach(id=>document.getElementById(id).value='');
+  ['companyName','industry','mainContent','contactName','website','ogImage'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('articleType').value='';
+  document.getElementById('pageUrl').value = window.location.origin;
   document.getElementById('articleOutput').style.display='none';
   document.getElementById('articleActions').style.display='none';
   document.getElementById('htmlPreviewBox').style.display='none';
